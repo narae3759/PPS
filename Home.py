@@ -1,42 +1,41 @@
+# python -m streamlit run script.py
 import streamlit as st
-from dotenv import load_dotenv
-import os
-
-# .env load 
-load_dotenv()
-
-# check API KEY 
-if "OPENAI_API_KEY" not in os.environ:
-    print("API KEY 정보가 없습니다. 확인 후 환경변수에 등록해주세요.")
+from utils.utils import read_mdfile, style_load
 	
 # llm 생성
 from langchain_openai import ChatOpenAI
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
-from langchain_core.callbacks import BaseCallbackHandler
+from utils.langchain_custom import CustomHandler
 
-class CustomHandler(BaseCallbackHandler):
-    def __init__(self, container):
-        self.container = container
-        self.text = ""
-    def on_llm_new_token(self, token: str, **kwargs) -> None:
-        self.text += token
-        self.container.markdown(self.text)
-
+style_load()
 ###########################################################################
 # Page 시작
 ###########################################################################
-## Title
-st.title("PPS AI & Data Lab 실험실")
-
 ## author
-st.markdown("**author: 김나래 연구원**")
+st.markdown('''<div style="text-align:right;font-size:12;">
+                <b>작성자: 김나래 연구원<b>
+            </div>''', unsafe_allow_html=True)
 
-## GitLab
-st.markdown("## Docs")
 
-# from pathlib import Path
-# def read_mdfile(file):
-#     md_text = Path(file).read_text(encoding="utf-8")
-#     st.markdown(md_text)
-    
-# read_mdfile("./docs/Streamlit/01. Streamlit 기초.md")
+
+## Reference
+st.divider()
+st.markdown("### 📃 Reference")
+
+tab1, tab2 = st.tabs(["✨ Streamlit", "🦜️ Langchain"])
+with tab1:
+    st.markdown(
+        """
+        * 🔗 [Streamlit 공식 문서](https://docs.streamlit.io/develop/api-reference/chat)
+        * 🔗 [Streamlit Components 모음](https://streamlit.io/components)
+        * 🔗 [Streamlit Sidebar github](https://github.com/blackary/st_pages)
+        """
+    )
+with tab2:
+    st.markdown(
+        """
+        * 🔗 [Langchain 공식 문서](https://python.langchain.com/docs/get_started/introduction)
+        * 🔗 [Langchain 번역 문서(written by 테디노트)](https://wikidocs.net/book/14314)
+        * 🔗 [Langchain 강의(모두의 AI)](https://www.youtube.com/watch?v=WWRCLzXxUgs)
+        """
+    )

@@ -1,28 +1,12 @@
 import streamlit as st
-
-from dotenv import load_dotenv
-import os
-
-# .env load 
-load_dotenv()
-
-# check API KEY 
-if "OPENAI_API_KEY" not in os.environ:
-    print("API KEY 정보가 없습니다. 확인 후 환경변수에 등록해주세요.")
+from utils.utils import read_mdfile, style_load
 	
 # llm 생성
 from langchain_openai import ChatOpenAI
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
-from langchain_core.callbacks import BaseCallbackHandler
+from utils.langchain_custom import CustomHandler
 
-class CustomHandler(BaseCallbackHandler):
-    def __init__(self, container):
-        self.container = container
-        self.text = ""
-    def on_llm_new_token(self, token: str, **kwargs) -> None:
-        self.text += token
-        self.container.markdown(self.text)
-        
+style_load()
 ###########################################################################
 # Page 시작
 ###########################################################################
