@@ -3,6 +3,7 @@ from utils.utils import read_mdfile, style_load
 	
 # llm 생성
 from langchain_openai import ChatOpenAI
+from langchain_core.prompts import PromptTemplate
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from utils.langchain_custom import CustomHandler
 
@@ -10,9 +11,6 @@ style_load()
 ###########################################################################
 # Page 시작
 ###########################################################################
-## Title
-st.title("상담봇")
-
 ## 인사
 st.chat_message("assistant").markdown("안녕하세요. PPS 상담봇입니다. 고민이 있다면 언제든 말해주세요:smile:")
 
@@ -25,7 +23,7 @@ for chat in st.session_state.messages:
 	with st.chat_message(chat["role"]):
 		st.markdown(chat["content"])
 
-if prompt := st.chat_input("Message Chatbot..."):
+if prompt := st.chat_input("채팅을 입력하세요(ex. 나 오늘 우울해)"):
 	
     chat = [
         SystemMessage(

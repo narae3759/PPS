@@ -1,4 +1,4 @@
-# python -m streamlit run script.py
+# python -m streamlit run Home.py
 import streamlit as st
 from utils.utils import read_mdfile, style_load
 	
@@ -16,26 +16,10 @@ st.markdown('''<div style="text-align:right;font-size:12;">
                 <b>작성자: 김나래 연구원<b>
             </div>''', unsafe_allow_html=True)
 
+## Docs 링크
+st.markdown("📌 LLM 소개, 기능 테스트를 위한 사이트입니다.")
+st.markdown("📌 간략한 예제를 준비했으며 앞으로 기능들을 구체적으로 개발할 예정입니다.")
+st.markdown("📌 공부한 내용을 따로 정리하고 있습니다.(📚 Docs 보러가기 [↗](https://github.com/narae3759/PPS/wiki), 업데이트 예정입니다.)")
 
-
-## Reference
-st.divider()
-st.markdown("### 📃 Reference")
-
-tab1, tab2 = st.tabs(["✨ Streamlit", "🦜️ Langchain"])
-with tab1:
-    st.markdown(
-        """
-        * 🔗 [Streamlit 공식 문서](https://docs.streamlit.io/develop/api-reference/chat)
-        * 🔗 [Streamlit Components 모음](https://streamlit.io/components)
-        * 🔗 [Streamlit Sidebar github](https://github.com/blackary/st_pages)
-        """
-    )
-with tab2:
-    st.markdown(
-        """
-        * 🔗 [Langchain 공식 문서](https://python.langchain.com/docs/get_started/introduction)
-        * 🔗 [Langchain 번역 문서(written by 테디노트)](https://wikidocs.net/book/14314)
-        * 🔗 [Langchain 강의(모두의 AI)](https://www.youtube.com/watch?v=WWRCLzXxUgs)
-        """
-    )
+## 설명
+read_mdfile("./docs/home.md")

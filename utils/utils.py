@@ -16,9 +16,7 @@ def sidebar():
             Section(name="Examples", icon="📌"),
                 Page("./pages/1_01_문서요약.py", "01. 문서요약"),
                 Page("./pages/2_02_상담봇.py", "02. 상담봇"),
-                Page("./pages/3_03_글쓰기.py", "03. 글쓰기"),
-            Section(name="Docs", icon="📚"),
-                Page("./pages/4_04_test.py", "Langchain", ""),
+                Page("./pages/3_03_글쓰기.py", "03. 글쓰기")
         ]
     )
 
