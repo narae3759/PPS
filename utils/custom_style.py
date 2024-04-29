@@ -21,7 +21,7 @@ def sidebar():
                 Page("./pages/2_02_상담봇.py", "02. 상담봇"),
                 Page("./pages/3_03_글쓰기.py", "03. 글쓰기"),
                 Page("./pages/4_04_QA봇.py", "04. Q&A 봇"),
-                Page("./pages/5_test.py", "05. 테스트중입니다")
+                # Page("./pages/5_test.py", "05. 테스트중입니다")
         ]
     )
 
