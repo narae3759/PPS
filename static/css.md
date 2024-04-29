@@ -1,4 +1,3 @@
-<head>
 <style>
 @font-face {
     font-family: 'Freesentation-9Black';
@@ -23,9 +22,9 @@
 }
 p {
     margin-bottom: 0.2rem;
+    font-size: 1rem;
 }
 b {
     font-family: 'Pretendard-ExtraBold';
 }
 </style>
-</head>

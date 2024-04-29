@@ -1,8 +1,8 @@
 import streamlit as st
 
-from utils.utils import read_mdfile, style_load
+from utils.custom_style import *
 
-style_load()
+load_style()
 	
 # llm 생성
 from langchain_openai import ChatOpenAI

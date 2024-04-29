@@ -55,7 +55,7 @@ with st.expander(
 
     ### select line, template
     with col1:
-        with st.container(border=True, height=250):
+        with st.container(border=True):
             line = st.number_input(
                 label=':one: 몇 줄로 요약할까요?', 
                 value=5, 
@@ -68,8 +68,7 @@ with st.expander(
             )
     ### template example
     with col2:
-        with st.container(border=True, height=250):
-            st.markdown("<div style='font-size:0.9rem'>🎈 Examples</div>", unsafe_allow_html=True)
+        with st.container(border=True):
             tabs = st.tabs(["Template1", "Template2", "Template3"])
             for i in range(3):
                 isdisable = False if i == 2 else True
@@ -77,8 +76,8 @@ with st.expander(
                     label="요약 템플릿",
                     value=templates[i],
                     label_visibility="collapsed",
-                    key=f"template{i}",
                     height=130,
+                    key=f"template{i}",
                     disabled=isdisable
                 )
                 
