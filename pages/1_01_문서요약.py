@@ -107,18 +107,19 @@ if button:
     with st.container(border=True):
         st.markdown("#### Result")
         output = st.empty()
+        
+        prompt = PromptTemplate.from_template(templates[opt_index[radios]])
+        model = ChatOpenAI(
+                    temperature=0, 
+                    model_name="gpt-3.5-turbo",
+                    streaming=True,
+                    callbacks=[CustomHandler(output)]
+                )
+        output_parser = StrOutputParser()
 
-    prompt = PromptTemplate.from_template(templates[opt_index[radios]])
-    model = ChatOpenAI(
-                temperature=0, 
-                model_name="gpt-3.5-turbo",
-                streaming=True,
-                callbacks=[CustomHandler(output)]
-            )
-    output_parser = StrOutputParser()
+        chain = prompt | model | output_parser 
 
-    chain = prompt | model | output_parser 
-
-    response = chain.invoke({"line": line, "text": content})
+        with st.spinner(text="요약 중입니다....."): 
+            response = chain.invoke({"line": line, "text": content})
 
     print(st.query_params)
