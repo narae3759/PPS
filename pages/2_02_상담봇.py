@@ -1,13 +1,13 @@
 import streamlit as st
-from utils.utils import read_mdfile, style_load
+from utils.custom_style import *
 	
 # llm 생성
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
-from utils.langchain_custom import CustomHandler
+from utils.custom_langchain import CustomHandler
 
-style_load()
+load_style()
 ###########################################################################
 # Page 시작
 ###########################################################################

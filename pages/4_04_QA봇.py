@@ -9,7 +9,7 @@ from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
-from utils.langchain_custom import CustomHandler
+from utils.custom_langchain import CustomHandler
 
 ###########################################################################
 # Page 시작
