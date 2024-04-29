@@ -1,5 +1,6 @@
 import streamlit as st
 from utils.custom_style import *
+import re
 
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate 
@@ -7,117 +8,175 @@ from langchain_core.output_parsers import StrOutputParser
 from utils.custom_langchain import CustomHandler
 
 load_style()
+session_key = 'ex_qa_state'
 ###########################################################################
 # Page 시작
 ###########################################################################
-## templates 
-options = ["Template1(단순 요약)", "Template2(리스트 요약)", "Template3(커스텀 요약)"]
+# Functions 
+def set_action(session_key, action, page=None):
+    if action == "Next":
+        st.session_state[session_key] += 1
+    elif action == "Back":
+        st.session_state[session_key] -= 1
+    elif action == "Move":
+        st.session_state[session_key] = page
 
-opt_index = {opt:i for i, opt in enumerate(options)}
-templates = {i:opt for i, opt in enumerate(options)}
+def check_url(url):
+    url_pattern = r'^https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+[^\s]*$'
+    check = True if re.match(url_pattern, url) else False
+    
+    return check 
 
-templates[0] = """# INSTRUCTION
-당신은 기자입니다. 다음 TEXT를 EXAMPLE을 참고하여 {line}줄로 요약해주세요.
-
-# TEXT: {text}
-"""
-
-templates[1] = """# INSTRUCTION
-- 다음 TEXT를 FORMAT에 맞춰 {line}줄로 요약해주세요.
-- 정량적으로 표현될 수 있는 요약을 맨 앞에 배치해주세요.
-
-# TEXT: {text}
-
-# FORMAT:
-- 요약1
-- 요약2
-- 요약3
-"""
-
-templates[2] = """# INSTRUCTION
-- 다음 TEXT를 FORMAT에 맞춰 {line}줄로 요약해주세요.
-
-# TEXT: {text}
-
-# FORMAT:
-1. 요약:
-2. 원인:
-3. 결과:
-"""
 #--------------------------------------------------------------------------
 ## Settings
 #--------------------------------------------------------------------------
-with st.expander(
-    label=":gear: Settings",
-    expanded=True):
+if session_key not in st.session_state:
+    st.session_state[session_key] = 1
 
-    col1, col2 = st.columns(2)
+#--------------------------------------------------------------------------
+## Header
+#--------------------------------------------------------------------------
+columns = st.columns([0.1,0.35,0.1,0.35,0.1])
 
-    ### select line, template
-    with col1:
-        with st.container(border=True):
-            line = st.number_input(
-                label=':one: 몇 줄로 요약할까요?', 
-                value=5, 
-                format="%d"
-            )
-            
-            radios = st.radio(
-                label=":two: 요약 템플릿을 선택하세요",
-                options=options
-            )
-    ### template example
-    with col2:
-        with st.container(border=True):
-            tabs = st.tabs(["Template1", "Template2", "Template3"])
-            for i in range(3):
-                isdisable = False if i == 2 else True
-                tabs[i].text_area(
-                    label="요약 템플릿",
-                    value=templates[i],
-                    label_visibility="collapsed",
-                    height=130,
-                    key=f"template{i}",
-                    disabled=isdisable
-                )
-                
+type_dict = {0: "primary", 1: "secondary"}
+type_key = 0 if st.session_state['ex_qa_state'] == 1 else 1
 
-    ### input text
-    with open("./exercise/example.txt", 'r', encoding='utf-8') as f:
-        example_text = f.read()
+with columns[1].container():
+    st.button(label="STEP1. 정보 입력", 
+              on_click=set_action, args=[session_key, "Move",1],
+              type=type_dict[type_key],
+              use_container_width=True)
+with columns[3].container():
+    st.button(label="STEP2. 요약 및 Q&A", 
+              on_click=set_action, args=[session_key,"Move",2],
+              type=type_dict[1-type_key],
+              use_container_width=True)
 
+vertical_space(20)
+
+#--------------------------------------------------------------------------
+## Body
+#--------------------------------------------------------------------------
+template = """# INSTRUCTION
+당신은 기자입니다. 다음 TEXT를 EXAMPLE을 참고하여 5줄로 완전한 문장으로 요약해주세요.
+
+# TEXT: {text}
+"""
+
+if st.session_state[session_key] == 1:
+    ### Form 1 - STEP1. 정보 입력
     with st.container(border=True):
-        content = st.text_area(
-            label=":three: 요약하고 싶은 텍스트를 입력하세요",
-            value=example_text,
-            height=200
+        options = ["직접 입력", "URL", "File Upload"]
+        opt_index = {opt:i for i, opt in enumerate(options)}
+
+        # Radio Button
+        radio = st.radio(
+            label="입력 방식",
+            options=options,
+            horizontal=True
         )
 
-### click button 
-button = st.button(
-    label="텍스트 요약하기",
-    use_container_width=True,
-    type="primary"
-)
-#--------------------------------------------------------------------------
-## output
-#--------------------------------------------------------------------------
-if button:
-    with st.container(border=True):
-        st.markdown("#### Result")
-        output = st.empty()
-
-    prompt = PromptTemplate.from_template(templates[opt_index[radios]])
-    model = ChatOpenAI(
-                temperature=0, 
-                model_name="gpt-3.5-turbo",
-                streaming=True,
-                callbacks=[CustomHandler(output)]
+        # Input Box
+        radio_idx = opt_index[radio]
+        if radio_idx == 0:
+            content = st.text_area(
+                height=300,
+                label="텍스트",
+                label_visibility="collapsed",
+                placeholder="텍스트를 입력하세요"
             )
-    output_parser = StrOutputParser()
+        elif radio_idx == 1:
+            content = st.text_input(
+                label="텍스트",
+                label_visibility="collapsed",
+                placeholder="https://www.google.com"
+            )
+            url_available = check_url(content)
+        else:
+            content = st.file_uploader(
+                label="텍스트",
+                label_visibility="collapsed"
+            )
 
-    chain = prompt | model | output_parser 
+    # Save Data
+    st.session_state['ex_qa_data'] = {
+        "type": radio,
+        "content": content
+    }
 
-    response = chain.invoke({"line": line, "text": content})
+    # Raise Error
+    isdisabled = False
+    if not content:
+        isdisabled = True
+        st.error("입력된 값이 존재하지 않습니다.", icon="🚨")
+    elif radio_idx == 1 and not url_available:
+        isdisabled = True
+        st.error("올바른 URL 표현이 아닙니다.", icon="🚨")
 
-    print(st.query_params)
+    # Next Button
+    st.button(
+        label="STEP1. 요약 및 Q&A으로 이동",
+        type="primary",
+        disabled=isdisabled,
+        on_click=set_action, args=[session_key,"Next"],
+        use_container_width=True
+    )
+else:
+    ### Form 2 - STEP2. 요약 및 Q&A
+    #### Summary Container
+    data = st.session_state["ex_qa_data"]
+
+    # Raise Error
+    if not data['content']:
+        st.error("입력된 값이 존재하지 않습니다. STEP1부터 다시 하세요.", icon="🚨")
+
+        # Back Button  
+        st.button(
+            label="STEP1. 정보 입력으로 이동",
+            type="primary",
+            on_click=set_action, args=[session_key,"Back"],
+            use_container_width=True
+        )
+    else:
+        with st.container(border=True):
+            st.markdown("<div style='font-size:0.9rem;margin-bottom:0.5rem'>요약</div>", unsafe_allow_html=True)
+            print(data["content"])
+            container = st.empty()
+
+            prompt = PromptTemplate.from_template(template)
+            model = ChatOpenAI(
+                        temperature=0, 
+                        model_name="gpt-3.5-turbo",
+                        streaming=True,
+                        callbacks=[CustomHandler(container)]
+                    )
+            output_parser = StrOutputParser()
+
+            chain = prompt | model | output_parser 
+
+            with st.spinner(text="요약 중입니다....."): 
+                response = chain.invoke({"text": data["content"]})
+            
+            vertical_space(3)
+
+    #### Question Container
+    with st.container(border=True):
+        st.markdown("<div style='font-size:0.9rem;margin-bottom:0.5rem'>Question</div>", unsafe_allow_html=True)
+        col1, col2 = st.columns([0.85,0.15])
+        with col1:
+            st.text_input(
+                label="Question",
+                placeholder="질문을 입력하세요",
+                label_visibility="collapsed"
+            )
+        with col2:
+            st.button(
+                label="Enter",
+                use_container_width=True
+            )
+
+#--------------------------------------------------------------------------
+## Form 1 - STEP1. 정보 입력
+#--------------------------------------------------------------------------
+# with st.spinner(text="이동 중"):
+

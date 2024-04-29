@@ -2,11 +2,6 @@
 import streamlit as st
 from utils.utils import read_mdfile
 from utils.custom_style import load_style
-	
-# llm 생성
-from langchain_openai import ChatOpenAI
-from langchain.schema import AIMessage, HumanMessage, SystemMessage
-from utils.langchain_custom import CustomHandler
 
 load_style()
 ###########################################################################
