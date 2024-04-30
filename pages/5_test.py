@@ -1,18 +1,22 @@
 import streamlit as st
 from utils.custom_style import *
+from utils.custom_langchain import *
 import re
-
-from langchain_openai import ChatOpenAI
-from langchain_core.prompts import PromptTemplate 
-from langchain_core.output_parsers import StrOutputParser 
-from utils.custom_langchain import CustomHandler
 
 load_style()
 session_key = 'ex_qa_state'
 ###########################################################################
 # Page 시작
 ###########################################################################
-# Functions 
+## Templates
+template = """# INSTRUCTION
+TEXT를 5줄로 요약해주세요. 각 문장은 높임말로 작성해주세요.
+
+# TEXT: {text}
+"""
+#--------------------------------------------------------------------------
+## Functions
+#--------------------------------------------------------------------------
 def set_action(session_key, action, page=None):
     if action == "Next":
         st.session_state[session_key] += 1
@@ -57,12 +61,6 @@ vertical_space(20)
 #--------------------------------------------------------------------------
 ## Body
 #--------------------------------------------------------------------------
-template = """# INSTRUCTION
-당신은 기자입니다. 다음 TEXT를 EXAMPLE을 참고하여 5줄로 완전한 문장으로 요약해주세요.
-
-# TEXT: {text}
-"""
-
 if st.session_state[session_key] == 1:
     ### Form 1 - STEP1. 정보 입력
     with st.container(border=True):
@@ -138,42 +136,45 @@ else:
             use_container_width=True
         )
     else:
+    # Summary Container
         with st.container(border=True):
             st.markdown("<div style='font-size:0.9rem;margin-bottom:0.5rem'>요약</div>", unsafe_allow_html=True)
-            print(data["content"])
-            container = st.empty()
-
-            prompt = PromptTemplate.from_template(template)
-            model = ChatOpenAI(
-                        temperature=0, 
-                        model_name="gpt-3.5-turbo",
-                        streaming=True,
-                        callbacks=[CustomHandler(container)]
-                    )
-            output_parser = StrOutputParser()
-
-            chain = prompt | model | output_parser 
-
-            with st.spinner(text="요약 중입니다....."): 
-                response = chain.invoke({"text": data["content"]})
+            
+            chain = ChainSummary(template)
+            response = chain.invoke({"text": data["content"]})
             
             vertical_space(3)
 
     #### Question Container
     with st.container(border=True):
+        # Input Box
         st.markdown("<div style='font-size:0.9rem;margin-bottom:0.5rem'>Question</div>", unsafe_allow_html=True)
         col1, col2 = st.columns([0.85,0.15])
         with col1:
-            st.text_input(
+            container = st.empty()
+
+            question = st.text_input(
                 label="Question",
                 placeholder="질문을 입력하세요",
                 label_visibility="collapsed"
             )
+
+        # Enter Button
         with col2:
-            st.button(
+            enter_btn = st.button(
                 label="Enter",
                 use_container_width=True
             )
+
+
+    # Back Button  
+    st.button(
+        label="다시하기",
+        type="primary",
+        on_click=set_action, args=[session_key,"Back"],
+        use_container_width=True
+    )
+        
 
 #--------------------------------------------------------------------------
 ## Form 1 - STEP1. 정보 입력
