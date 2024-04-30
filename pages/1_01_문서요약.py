@@ -1,10 +1,10 @@
 import streamlit as st
 from utils.custom_style import *
+from utils.custom_langchain import *
 
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate 
 from langchain_core.output_parsers import StrOutputParser 
-from utils.custom_langchain import CustomHandler
 
 load_style()
 ###########################################################################
@@ -17,7 +17,7 @@ opt_index = {opt:i for i, opt in enumerate(options)}
 templates = {i:opt for i, opt in enumerate(options)}
 
 templates[0] = """# INSTRUCTION
-당신은 기자입니다. 다음 TEXT를 EXAMPLE을 참고하여 {line}줄로 요약해주세요.
+TEXT를 {line}줄로 요약해주세요. 각 문장은 높임말로 작성해주세요.
 
 # TEXT: {text}
 """
@@ -82,7 +82,6 @@ with st.expander(
                     disabled=isdisable
                 )
                 
-
     ### input text
     with open("./exercise/example.txt", 'r', encoding='utf-8') as f:
         example_text = f.read()
@@ -106,20 +105,6 @@ button = st.button(
 if button:
     with st.container(border=True):
         st.markdown("#### Result")
-        output = st.empty()
-        
-        prompt = PromptTemplate.from_template(templates[opt_index[radios]])
-        model = ChatOpenAI(
-                    temperature=0, 
-                    model_name="gpt-3.5-turbo",
-                    streaming=True,
-                    callbacks=[CustomHandler(output)]
-                )
-        output_parser = StrOutputParser()
 
-        chain = prompt | model | output_parser 
-
-        with st.spinner(text="요약 중입니다....."): 
-            response = chain.invoke({"line": line, "text": content})
-
-    print(st.query_params)
+        chain = ChainSummary(templates[opt_index[radios]])
+        response = chain.invoke({"line": line, "text": content})
