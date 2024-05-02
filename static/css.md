@@ -21,7 +21,7 @@
     font-family: 'Pretendard-SemiBold';
 }
 p {
-    margin-bottom: 0.2rem;
+    /* margin-bottom: 0.2rem; */
     font-size: 1rem;
 }
 b {

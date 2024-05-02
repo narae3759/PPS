@@ -35,6 +35,24 @@ class ChainSummary:
             response = self.chain.invoke(inputs)
 
         return response
+    
+class ChainSimpleSummary:
+    def __init__(self, template):
+        self.template = template
+
+        self.prompt = PromptTemplate.from_template(self.template)
+        self.model = ChatOpenAI(
+            temperature=0,
+            model_name="gpt-3.5-turbo",
+        )
+        self.output_parser = StrOutputParser()
+
+        self.chain = self.prompt | self.model | self.output_parser
+
+    def invoke(self, inputs):
+        response = self.chain.invoke(inputs)
+
+        return response
 
 class CustomHandler(BaseCallbackHandler):
     def __init__(self, container):
