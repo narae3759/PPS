@@ -15,13 +15,14 @@ session_key = 'news_data'
 ## Templates
 #--------------------------------------------------------------------------
 template = """# INSTRUCTION
-- 다음 TEXT를 FORMAT에 맞춰 5줄로 요약하세요.
-- 다음 FORMAT에 맞춰 작성하세요.
-- 요점 정리는 bullet form으로 작성하고 온점(.)으로 종결하세요.
-- 태그는 최대 3개이며, 키워드 앞에 '\#'를 붙이세요.
+- 당신은 뉴스 정보를 전달하는 기자입니다.
+- ARTICLE을 FORMAT에 맞춰 5줄로 요약하세요.
+- 요약은 bullet form으로 작성하고 온점(.)으로 종결하세요.
+- 태그는 ARTICLE을 대표하는 키워드를 의미합니다.
+- 태그는 최대 5개이며, 키워드 앞에 '\#'를 붙이세요.
 
 
-# TEXT: {text}
+# ARTICLE: {article}
 
 # FORMAT:
 🔖 태그1, 태그2, ...
@@ -30,6 +31,29 @@ template = """# INSTRUCTION
 - 요약1
 - 요약2
 - ...
+
+# EXAMPLES
+1. 
+🔖 #양자점레이저, #ETRI, #광통신부품연구실
+
+📌 요점 정리
+
+- 양자점 레이저 대량 생산 기술 개발로 생산단가 1/6 수준으로 낮아질 전망.
+- ETRI가 MOCVD를 이용해 인듐비소/갈륨비소 양자점 레이저 다이오드 개발 성공.
+- 기존 MBE 방식보다 밀도가 높고 균일한 양자점 제조 기술 개발.
+- 통신용 반도체 레이저 제조비용을 1/6 이하로 낮출 수 있을 것으로 기대.
+- 연구 성과를 통해 해외시장 점유율 증가 및 국내 광통신 부품 산업 성장 기대.
+
+2. 
+🔖 #SK텔레콤, #AI, #소비자만족도
+
+📌 요점 정리
+
+- SK텔레콤, NCSI 이동전화 서비스 부문 27년 연속 1위 차지.
+- AI 기술을 활용한 서비스 혁신으로 소비자만족도 80점 돌파.
+- 에이닷 AI비서와 스페셜T 프로그램 등으로 성과 이룸.
+- 매장 및 고객센터에서 AI 기술 활용해 소비자 편의 증진.
+- 가족 로밍, 0 청년 요금제 등 다양한 혜택 제공으로 고객 만족도 높임.
 """
 #--------------------------------------------------------------------------
 ## Functions
@@ -143,7 +167,7 @@ def create_article_expander(number:int, info_dict:dict):
 
         with col2:
             chain = ChainSummary(template)
-            response = chain.invoke({"text": info_dict["content"]})
+            response = chain.invoke({"article": info_dict["content"]})
             info_dict['summary'] = response
 
 def create_article_expander_no_stream(number:int, info_dict:dict):
