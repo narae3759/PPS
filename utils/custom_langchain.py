@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import os
 
 def load_api():
-    """ API KEY 셋팅 """
+    """ 환경변수에서 API KEY 불러오기 """
     load_dotenv()
 
     # check API KEY 
@@ -15,6 +15,7 @@ def load_api():
         print("API KEY 정보가 없습니다. 확인 후 환경변수에 등록해주세요.")
 
 class ChainSummary:
+    """ 문서 요약 """
     def __init__(self, template):
         self.container = st.empty()
         self.template = template

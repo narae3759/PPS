@@ -10,7 +10,8 @@ load_style()
 ###########################################################################
 # Page 시작
 ###########################################################################
-## templates 
+## Templates 
+#--------------------------------------------------------------------------
 options = ["Template1(단순 요약)", "Template2(리스트 요약)", "Template3(커스텀 요약)"]
 
 opt_index = {opt:i for i, opt in enumerate(options)}
@@ -45,15 +46,13 @@ templates[2] = """# INSTRUCTION
 3. 결과:
 """
 #--------------------------------------------------------------------------
-## Settings
+## Header
 #--------------------------------------------------------------------------
-with st.expander(
-    label=":gear: Settings",
-    expanded=True):
+with st.expander(label=":gear: Settings",expanded=True):
 
     col1, col2 = st.columns(2)
 
-    ### select line, template
+    ### Select Options
     with col1:
         with st.container(border=True, height=250):
             line = st.number_input(
@@ -66,7 +65,7 @@ with st.expander(
                 label=":two: 요약 템플릿을 선택하세요",
                 options=options
             )
-    ### template example
+    ### Template Example
     with col2:
         with st.container(border=True, height=250):
             st.markdown("<div style='font-size:0.9rem'>🎈 Examples</div>", unsafe_allow_html=True)
@@ -82,7 +81,7 @@ with st.expander(
                     disabled=isdisable
                 )
                 
-    ### input text
+    ### TextBox
     with open("./exercise/example.txt", 'r', encoding='utf-8') as f:
         example_text = f.read()
 
@@ -100,11 +99,16 @@ button = st.button(
     type="primary"
 )
 #--------------------------------------------------------------------------
-## output
+## Body
 #--------------------------------------------------------------------------
+
+# When the Button is clicked
 if button:
     with st.container(border=True):
-        st.markdown("#### Result")
+        # Title
+        text_align("Summary")
+        vertical_space(3)
 
+        # Summary
         chain = ChainSummary(templates[opt_index[radios]])
         response = chain.invoke({"line": line, "text": content})

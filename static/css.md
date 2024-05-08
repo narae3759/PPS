@@ -27,4 +27,10 @@ p {
 b {
     font-family: 'Pretendard-ExtraBold';
 }
+.info-container {
+    background-color:#E8F4FF; 
+    margin:0 1rem 2rem; 
+    padding: 1rem; 
+    border-radius: 1rem;
+}
 </style>

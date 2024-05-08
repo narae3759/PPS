@@ -3,43 +3,20 @@ from st_pages import Page, Section, show_pages, add_page_title
 from utils.utils import read_mdfile
 from utils.custom_langchain import load_api
 
-def vertical_space(size):
-    st.container(height=size, border=False)
-
-def text_align(text, type="center"):
-    st.markdown(f"""
-               <div style="text-align:{type}">
-               {text}
-               </div>
-               """, unsafe_allow_html=True)
-
-def button_align(label, type="right", ratio=None):
-    if not ratio:
-        if type=="center":
-            ratio = [0.3,0.4,0.3]
-            idx = 1
-        elif type == "right":
-            ratio = [0.8, 0.2]  
-            idx = 1
-        else:
-            ratio = [0.2, 0.8]
-            idx = 0
+def load_style():
+    """ Sets up the basic environment """
+    # Load API KEY
+    load_api() 
     
-    columns = st.columns(ratio)
-    button = columns[idx].button(
-        label=label,
-        use_container_width=True
-    )
+    # Apply css
+    read_mdfile("./static/css.md")
 
-    return button
-    
-    
+    # Create sidebar
+    sidebar()
 
-        
-    
 
 def sidebar():
-    """ sidebar 목차 구성 """
+    """ Creates a sidebar with the specified content """
     add_page_title()
     show_pages(
         [
@@ -49,20 +26,65 @@ def sidebar():
                 Page("./pages/2_02_상담봇.py", "02. 상담봇"),
                 Page("./pages/3_03_글쓰기.py", "03. 글쓰기"),
                 Page("./pages/4_04_QA봇.py", "04. Q&A 봇"),
-                Page("./pages/6_test.py", "05. 테스트중입니다")
+            Section(name="Projects", icon="💼"),
+                Page("./pages/6_01_뉴스요약.py", "01. 오늘의 뉴스 요약"),
         ]
     )
 
-def load_style():
-    """ 전체 환경 Setting """
-    # API KEY 불러오기
-    load_api() 
-    
-    # 스타일 적용 
-    read_mdfile("./static/css.md")
 
-    # Sidebar 목차 구성
-    sidebar()
+def vertical_space(size:int):
+    """Create vertical blank spaces
+
+    Args:
+        size (int): height
+    """
+    st.container(height=size, border=False)
+
+
+def text_align(text:str, type="center"):
+    """Aligns the text with the specified alignment
+    
+    Args:
+        text (str): The text to be aligned
+        type (str, optional): The alignment style for the text. Can be one of the following: 'left', 'center'(default), 'right' 
+    """
+    st.markdown(f"""
+               <div style="text-align:{type}">
+               {text}
+               </div>
+               """, unsafe_allow_html=True)
+
+
+def btn_container(type="right", ratio=None):
+    """Adjusts the position of the button
+
+    Args:
+        button : A button provided by streamlit
+        type (str, optional): The alignment style for the text. Can be one of the following: 'left', 'center', 'right'(default)
+        ratio (list, optional): The length of the button. 
+
+    Returns:
+        columns[idx]: The container to insert the button into
+    """
+    if not ratio:
+        if type=="center":
+            ratio = [0.3,0.4,0.3]
+            idx = 1
+        elif type == "right":
+            ratio = [0.7, 0.3]  
+            idx = 1
+        else:
+            ratio = [0.3, 0.7]
+            idx = 0
+    
+    columns = st.columns(ratio)
+    
+    return columns[idx]
+    
+
+
+
+
     
     
 
