@@ -2,6 +2,7 @@ import streamlit as st
 from st_pages import Page, Section, show_pages, add_page_title
 from utils.utils import read_mdfile
 from utils.custom_langchain import load_api
+import re
 
 def load_style():
     """ Sets up the basic environment """
@@ -28,6 +29,8 @@ def sidebar():
                 Page("./pages/4_04_QA봇.py", "04. Q&A 봇"),
             Section(name="Projects", icon="💼"),
                 Page("./pages/6_01_뉴스요약.py", "01. 오늘의 뉴스 요약"),
+                Page("./pages/7_02_뉴스QA.py", "02. 오늘의 뉴스 QA"),
+                # Page("./pages/8_03_test.py", "03. 유튜브 요약"),
         ]
     )
 
@@ -82,7 +85,15 @@ def btn_container(type="right", ratio=None):
     return columns[idx]
     
 
+def remove_blank(text:str):
+    """Removes multiple whitespaces in a string.
 
+    Returns:
+        output: The text with multiple whitespaces removed
+    """
+    output = re.sub(r'\n{2,}', '\n', text).strip()
+
+    return output
 
 
     
