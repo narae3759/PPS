@@ -1,7 +1,7 @@
 # python -m streamlit run Home.py
 import streamlit as st
-from utils.utils import read_mdfile
-from utils.custom_style import load_style
+from custom_functions.utils import read_mdfile
+from custom_functions.custom_style import load_style
 
 load_style()
 ###########################################################################

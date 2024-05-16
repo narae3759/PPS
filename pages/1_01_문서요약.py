@@ -1,6 +1,5 @@
 import streamlit as st
-from utils.custom_style import *
-from utils.custom_langchain import *
+from custom_functions import *
 
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate 
@@ -48,6 +47,17 @@ templates[2] = """# INSTRUCTION
 #--------------------------------------------------------------------------
 ## Header
 #--------------------------------------------------------------------------
+# Insert Text
+st.markdown("""
+            <div class="info-container">
+            📢 기능 설명
+            <li> LLM은 문서를 요약할 수 있습니다. </li>
+            <li> Template을 통해 원하는 형식으로 출력이 가능합니다. </li>
+            <li> 텍스트 입력, URL 입력, PDF 입력 모두 가능합니다. (웹 보완 예정) </li>
+            </div>
+            """, unsafe_allow_html=True)
+
+# Setting Box
 with st.expander(label=":gear: Settings",expanded=True):
 
     col1, col2 = st.columns(2)
