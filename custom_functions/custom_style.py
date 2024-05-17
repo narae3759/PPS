@@ -22,14 +22,14 @@ def sidebar():
         [
             Page("Home.py", "PPS AI & Data Lab LLM 실험실", "🧪"),
             Section(name="Examples", icon="📌"),
-                Page("./pages/1_01_문서요약.py", "01. 문서요약"),
-                Page("./pages/2_02_상담봇.py", "02. 상담봇"),
-                Page("./pages/3_03_글쓰기.py", "03. 글쓰기"),
-                Page("./pages/4_04_QA봇.py", "04. Q&A 봇"),
+                Page("./pages/examples/01_문서요약.py", "01. 문서요약"),
+                Page("./pages/examples/02_상담봇.py", "02. 상담봇"),
+                Page("./pages/examples/03_글쓰기.py", "03. 글쓰기"),
+                # Page("./pages/examples/04_QA봇.py", "04. Q&A 봇"),
             Section(name="Projects", icon="💼"),
-                Page("./pages/6_01_뉴스요약.py", "01. 오늘의 뉴스 요약"),
-                Page("./pages/7_02_뉴스QA.py", "02. 오늘의 뉴스 QA"),
-                Page("./pages/8_03_test.py", "03. 유튜브 요약"),
+                Page("./pages/projects/01_뉴스요약.py", "01. 오늘의 뉴스 요약"),
+                Page("./pages/projects/02_뉴스QA.py", "02. 오늘의 뉴스 QA"),
+                Page("./pages/projects/03_유튜브요약.py", "03. 유튜브 요약"),
         ]
     )
 

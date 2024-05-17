@@ -46,10 +46,11 @@ from custom_functions.youtubetool import *
 st.markdown("""
             <div class="info-container">
             📢 기능 설명
-            <li> 유튜브 링크를 임베딩합니다.</li>
             <li> 유튜브에서 지원하고 있는 자막을 추출하고, 요약합니다.</li>
+            <li> 영어 자막일 시 요약할 때 한국어로 번역됩니다.</li>
             <li> 모든 요약은 개조식 문장으로 처리됩니다.</li>
             <li> 현재 요약 가능한 시간은 30분 이내입니다.(보완 예정)</li>
+            <li> Q&A 기능을 추가할 얘정입니다.</li>
             </div>
             """, unsafe_allow_html=True)
 
@@ -60,7 +61,8 @@ with st.expander(label=":computer: Youtube URL을 입력해주세요",expanded=T
     youtube_url = columns[0].text_input(
         label="텍스트",
         label_visibility="collapsed",
-        placeholder="https://www.youtube.com/watch?v=DQacCB9tDaw"
+        value="https://www.youtube.com/watch?v=DQacCB9tDaw",
+        placeholder="Youtube URL을 입력하세요."
         )
     
     # Click Button
