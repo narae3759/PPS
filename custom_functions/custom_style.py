@@ -28,7 +28,6 @@ def sidebar():
                 # Page("./pages/examples/04_QA봇.py", "04. Q&A 봇"),
             Section(name="Projects", icon="💼"),
                 Page("./pages/projects/01_뉴스요약.py", "01. 오늘의 뉴스 요약"),
-                # Page("./pages/projects/02_뉴스QA.py", "02. 오늘의 뉴스 QA"),
                 Page("./pages/projects/03_유튜브요약.py", "03. 유튜브 요약"),
         ]
     )
