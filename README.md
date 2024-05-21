@@ -1,12 +1,4 @@
 
----
-title: AI & Data Lab에서 관리하는 기록 저장소입니다.
-description: LLM 관련 지식을 기록하는 페이지입니다.
-date: 2024-05-11
-draft:
----
-
-
 안녕하세요. AI & Data Lab의 김나래 연구원입니다. 
 
 AI & Data Lab 은 지난 4월부터 LLM에 대한 연구를 시작했습니다. 
@@ -21,12 +13,10 @@ AI & Data Lab 은 지난 4월부터 LLM에 대한 연구를 시작했습니다.
 
 타 부서에게 AI와 관련한 내용을 최대한 쉽게 전달하고, 연구 기록을 위한 페이지입니다.
 
-<br>
-
 잘 이해되지 않거나 추가되었으면 하는 부분이 있다면 메일로 보내주세요.
 
 > [!info] Information
->* ✉ [narae3759@ppsystem.co.kr](https://ppsystem.daouoffice.com/app/mail)
+>* ✉️ [narae3759@ppsystem.co.kr](https://ppsystem.daouoffice.com/app/mail)
 >* 💻 [코드 관리, PPS Github](https://github.com/narae3759/PPS) 
 
 ## 🎯 5월 목표(진행중 🟢 예정 ⚫)
