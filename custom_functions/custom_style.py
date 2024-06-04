@@ -29,6 +29,7 @@ def sidebar():
             Section(name="Projects", icon="💼"),
                 Page("./pages/projects/01_뉴스요약.py", "01. 오늘의 뉴스 요약"),
                 Page("./pages/projects/03_유튜브요약.py", "03. 유튜브 요약"),
+                Page("./pages/projects/04_뉴스검색.py", "04. 뉴스 검색"),
         ]
     )
 
