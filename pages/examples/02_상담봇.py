@@ -2,11 +2,16 @@ import streamlit as st
 from custom_functions import *
 	
 # llm 생성
+from langchain import hub 
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
-from langchain.schema import AIMessage, HumanMessage, SystemMessage
+from langchain_core.output_parsers import StrOutputParser
+from operator import itemgetter
+from langchain.memory import ConversationBufferMemory
+from langchain_core.runnables import RunnableLambda, RunnablePassthrough
 
 load_style()
+session_key = "chat_history"
 ###########################################################################
 # Page 시작
 ###########################################################################
@@ -19,46 +24,57 @@ st.markdown("""
             <li> 상담이 아닌 특정 업무에 대한 챗봇으로 바꿀 예정입니다. </li>
             </div>
             """, unsafe_allow_html=True)
+#--------------------------------------------------------------------------
+## Settings
+#--------------------------------------------------------------------------
+if session_key not in st.session_state:
+    st.session_state[session_key] = []
 
-## 인사
-st.chat_message("assistant").markdown("안녕하세요. PPS 상담봇입니다. 고민이 있다면 언제든 말해주세요:smile:")
+if "chain" in st.session_state:
+    chat = st.session_state["chain"]
+    memory = st.session_state["memory"]
+else:
+    # Chat 인스턴스 생성
+    # prompt = PromptTemplate.from_template(template)
+    memory = ConversationBufferMemory(return_messages=True, memory_key="chat_history")
+    runnable = RunnablePassthrough.assign(
+        chat_history = RunnableLambda(memory.load_memory_variables)
+        | itemgetter("chat_history")
+    )
+    prompt = hub.pull("thinker/counseling_korean")
+    model = ChatOpenAI(model_name="gpt-4o",streaming=True)
+    chain = runnable | prompt | model | StrOutputParser()
 
-## STEP1. messages 생성
-if "messages" not in st.session_state:
-	st.session_state.messages = []
+    chat = Chat(chain, session_key)
+    st.session_state["chain"] = chat
+    st.session_state["memory"] = memory
 
-## STEP2. messages 출력
-for chat in st.session_state.messages:
-	with st.chat_message(chat["role"]):
-		st.markdown(chat["content"])
+#--------------------------------------------------------------------------
+## Header & Body
+#--------------------------------------------------------------------------
 
-if prompt := st.chat_input("채팅을 입력하세요(ex. 나 오늘 우울해)"):
-	
-    chat = [
-        SystemMessage(
-            content = """
-            당신은 상대방의 사연을 듣고 상담해주는 심리상담사 로봇입니다.
-            상대방의 말에 공감해주고, 해결책이 있다면 찾아주세요. 
-            500자 이내로 상대방의 CHAT에 존댓말로 이모지와 함께 답변해주세요.
-            """
-        ),
-        HumanMessage(
-            content = prompt
-        ),
-    ]
-	
-    ## STEP3. user 
-    st.chat_message("user").markdown(prompt)
-    st.session_state.messages.append({"role":"user", "content":prompt})
+# 첫 채팅을 시작할 때 첫 인사 출력
+if len(st.session_state[session_key]) == 0:
+    greeting = "안녕하세요. 저는 심리 상담사입니다. 고민을 들어드릴게요😊"
+    chat.greeting(greeting)
+# 채팅 기록이 있을 때 기록된 채팅 출력
+else:
+    for history in st.session_state[session_key]:
+        st.chat_message(history["role"]).markdown(history["content"])
 
-    ## STEP4. assistant 
-    with st.chat_message("assistant"):
-        container = st.empty()
-        chatbot = ChatOpenAI(
-            model_name = "gpt-3.5-turbo",
-            temperature = 0.5,
-            streaming = True,
-            callbacks = [CustomHandler(container)]
-        )
-        response = chatbot.invoke(chat).content      
-    st.session_state.messages.append({"role":"assistant", "content":response})
+question = st.chat_input(placeholder="메세지 입력")
+
+# 채팅이 입력되었을 때
+if question:
+    # 입력된 채팅 출력
+    chat.input_user(question)
+
+    # 답변 출력
+    answer = chat.input_assistant(question)
+    # 메모리 저장
+    memory.save_context(
+        {"inputs": question},
+        {"output": answer}
+    )
+    # 메모리 출력
+    print(memory.load_memory_variables({}))
