@@ -52,20 +52,20 @@ if submit_btn:
 
     st.success("Complete!", icon="✔️")
 
-greeting = "안녕하세요. 뉴스를 기반으로 답하는 QA 로봇입니다. 무엇이 궁금하신가요?"
-st.chat_message("assistant").markdown(greeting)
-st.session_state[session_key].append({"role":"assistant", "content":greeting})
+    greeting = "안녕하세요. 뉴스를 기반으로 답하는 QA 로봇입니다. 무엇이 궁금하신가요?"
+    st.chat_message("assistant").markdown(greeting)
+    st.session_state[session_key].append({"role":"assistant", "content":greeting})
 
-question = st.chat_input(placeholder="채팅을 입력하세요")
+    question = st.chat_input(placeholder="채팅을 입력하세요")
 
-if question:
-    st.chat_message("user").markdown(question)
-    st.session_state[session_key].append({"role":"user", "content":question})
+    if question:
+        st.chat_message("user").markdown(question)
+        st.session_state[session_key].append({"role":"user", "content":question})
 
-    answer = chain.invoke(question)
-    st.chat_message("assistant").markdown(answer)
+        answer = chain.invoke(question)
+        st.chat_message("assistant").markdown(answer)
 
-    st.session_state[session_key].append({"role":"assistant", "content":answer})
+        st.session_state[session_key].append({"role":"assistant", "content":answer})
 
         
 
