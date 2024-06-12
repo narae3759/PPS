@@ -9,116 +9,146 @@ load_style()
 ###########################################################################
 # Page 시작
 ###########################################################################
-## Templates 
+# Insert Text
+st.markdown("""
+            <div class="info-container">
+            📢 기능 설명(작업 중)
+            <li> 입력된 텍스트를 읽고 요약해주는 기능입니다. </li>
+            <li> 템플릿에 따라 요약 형태를 바꿀 수 있습니다. </li>
+            <li> 입력 형식을 다양화 할 예정입니다. </li>
+            </div>
+            """, unsafe_allow_html=True)
 #--------------------------------------------------------------------------
-options = ["Template1(단순 요약)", "Template2(리스트 요약)", "Template3(커스텀 요약)"]
+## Template Examples
+#--------------------------------------------------------------------------
+template1 = """\
+# INSTRUCTION
+TEXT를 {line}줄로 요약해주세요.
 
-opt_index = {opt:i for i, opt in enumerate(options)}
-templates = {i:opt for i, opt in enumerate(options)}
-
-templates[0] = """# INSTRUCTION
-TEXT를 {line}줄로 요약해주세요. 각 문장은 높임말로 작성해주세요.
-
-# TEXT: {text}
+# TEXT: {input}
 """
 
-templates[1] = """# INSTRUCTION
+template2 = """\
+# INSTRUCTION
 - 다음 TEXT를 FORMAT에 맞춰 {line}줄로 요약해주세요.
 - 정량적으로 표현될 수 있는 요약을 맨 앞에 배치해주세요.
 
-# TEXT: {text}
+# TEXT: {input}
 
 # FORMAT:
 - 요약1
 - 요약2
-- 요약3
+- ...
 """
 
-templates[2] = """# INSTRUCTION
+template3 = """\
+# INSTRUCTION
 - 다음 TEXT를 FORMAT에 맞춰 {line}줄로 요약해주세요.
 
-# TEXT: {text}
+# TEXT: {input}
 
 # FORMAT:
-1. 요약:
+1. 요약: <200자 이내로 요약하세요>
 2. 원인:
 3. 결과:
 """
+
+template_dict = {
+    "Template 1": template1,
+    "Template 2": template2,
+    "Template 3": template3,
+    "Custom": "직접 입력해보세요",
+}
+#--------------------------------------------------------------------------
+## Settings
+#--------------------------------------------------------------------------
+# 모델 불러오기
+if "summary_chain" in st.session_state:
+    chain = st.session_state["summary_chain"]
+# 모델 생성 및 저장
+else:
+    prompt = PromptTemplate.from_template(template1)
+    model = ChatOpenAI(model_name="gpt-4o",streaming=True)
+    chain = prompt | model | StrOutputParser()
+
+    st.session_state["summary_chain"] = chain
+#--------------------------------------------------------------------------
+## Functions
+#--------------------------------------------------------------------------
+def tab_container(tab, template, disabled=True):
+    """tab의 text_area를 삽입하는 함수
+
+    Args:
+        tab (streamlit.delta_generator.DeltaGenerator): streamlit의 탭 컨테이너
+        template (str): text_area에 삽입할 문자열
+        disabled (bool, optional): 편집 가능 유무. Defaults to True.
+
+    Returns:
+        str: template 변수와 동일
+    """
+    prompt = tab.text_area(
+        label="template", 
+        height=270,
+        value=template, 
+        disabled=disabled,
+        label_visibility="collapsed"
+    )
+
+    return prompt
 #--------------------------------------------------------------------------
 ## Header
 #--------------------------------------------------------------------------
-# Insert Text
-st.markdown("""
-            <div class="info-container">
-            📢 기능 설명
-            <li> LLM은 문서를 요약할 수 있습니다. </li>
-            <li> Template을 통해 원하는 형식으로 출력이 가능합니다. </li>
-            <li> 텍스트 입력, URL 입력, PDF 입력 모두 가능합니다. (웹 보완 예정) </li>
-            </div>
-            """, unsafe_allow_html=True)
+# Template Examples Tab표현하기
+with st.expander(label="Template Examples"):
+    tabs = st.tabs(template_dict.keys())
+    for i, (_, value) in enumerate(template_dict.items()):
+        if i < len(template_dict) - 1:
+            tab_container(tabs[i], value)
+        else:
+            example = tab_container(tabs[i], value, disabled=False)
 
-# Setting Box
-with st.expander(label=":gear: Settings",expanded=True):
-
-    col1, col2 = st.columns(2)
-
-    ### Select Options
-    with col1:
-        with st.container(border=True, height=250):
-            line = st.number_input(
-                label=':one: 몇 줄로 요약할까요?', 
-                value=5, 
-                format="%d"
-            )
-            
-            radios = st.radio(
-                label=":two: 요약 템플릿을 선택하세요",
-                options=options
-            )
-    ### Template Example
-    with col2:
-        with st.container(border=True, height=250):
-            st.markdown("<div style='font-size:0.9rem'>🎈 Examples</div>", unsafe_allow_html=True)
-            tabs = st.tabs(["Template1", "Template2", "Template3"])
-            for i in range(3):
-                isdisable = False if i == 2 else True
-                tabs[i].text_area(
-                    label="요약 템플릿",
-                    value=templates[i],
-                    label_visibility="collapsed",
-                    key=f"template{i}",
-                    height=130,
-                    disabled=isdisable
-                )
-                
-    ### TextBox
-    with open("./exercise/example.txt", 'r', encoding='utf-8') as f:
-        example_text = f.read()
-
+# Setting 창
+with st.expander(label=":gear: Settings", expanded=True):
     with st.container(border=True):
-        content = st.text_area(
-            label=":three: 요약하고 싶은 텍스트를 입력하세요",
-            value=example_text,
-            height=200
+        # Line 입력
+        line = st.number_input(
+            label="1️⃣ 몇 줄로 요약할까요?",
+            value = 5,
+            max_value = 10
         )
 
-### click button 
-button = st.button(
-    label="텍스트 요약하기",
-    use_container_width=True,
-    type="primary"
-)
+        # Template 선택
+        template = st.radio(
+            label="2️⃣ 적용할 템플릿을 선택하세요",
+            options = template_dict.keys(),
+            horizontal=True
+        )
+    
+    # 요약할 텍스트 입력
+    with st.container(border=True):
+        content = st.text_area(
+            label="3️⃣ 요약할 텍스트를 입력하세요",
+            height=300
+        )
+
+    # 요약 버튼
+    button = st.button(
+        label="Summary",
+        type="primary",
+        use_container_width=True
+    )
 #--------------------------------------------------------------------------
 ## Body
 #--------------------------------------------------------------------------
-
-# When the Button is clicked
 if button:
+    # 요약 출력 창
     with st.container(border=True):
-        # Title
-        text_align("Summary")
-        vertical_space(3)
-
-        # Summary
-        chain = ChainSummary(templates[opt_index[radios]])
-        response = chain.invoke({"line": line, "text": content})
+        text_align("<b>Summary</b>")
+        vertical_space(5)
+        container = st.empty()
+        handler = CustomHandler(container)
+        chain.first.template = template_dict[template]
+        chain.invoke(
+            {"input": content, "line": line},
+            {"callbacks": [handler]}
+        )
