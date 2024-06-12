@@ -99,7 +99,7 @@ def tab_container(tab, template, disabled=True):
 ## Header
 #--------------------------------------------------------------------------
 # Template Examples Tab표현하기
-with st.expander(label="Template Examples"):
+with st.expander(label="📋 **Template Examples**"):
     tabs = st.tabs(template_dict.keys())
     for i, (_, value) in enumerate(template_dict.items()):
         if i < len(template_dict) - 1:
