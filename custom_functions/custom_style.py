@@ -120,5 +120,29 @@ def remove_blank(text:str):
 
 
     
-    
+def one_line_btn(ratio:list, placeholder:str, btnlabel:str):
+    """text_input과 button을 한 줄로 만드는 함수
+
+    Args:
+        ratio (list): text_input과 button 길이 비율
+        placeholder (str): text_input에 표현할 문자열
+        btnlabel (str): button 이름
+
+    Returns:
+        list: text_input과 button
+    """
+    columns = st.columns(ratio)
+    text = columns[0].text_input(
+        label="텍스트",
+        label_visibility="collapsed",
+        placeholder=placeholder
+    )
+
+    button = columns[1].button(
+        label=btnlabel,
+        type="primary",
+        use_container_width=True
+    )
+
+    return [text, button]    
 
