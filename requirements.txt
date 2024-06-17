@@ -1,6 +1,7 @@
 beautifulsoup4==4.12.3
 deepl==1.18.0
 langchain==0.1.14
+langchainhub==0.1.15
 langchain-community==0.0.31
 langchain-core==0.1.40
 langchain-experimental==0.0.55
