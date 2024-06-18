@@ -1,24 +1,40 @@
 import streamlit as st
 from custom_functions import *
 
+# llm 생성
+from operator import itemgetter
+from langchain.memory import ConversationBufferMemory
+from langchain_core.runnables import RunnableLambda, RunnablePassthrough
+
 load_style()
-session_key = "news_qa_msgs"
+session_key = "news_history"
 ###########################################################################
 # Page 시작
 ###########################################################################
-## Templates
-#--------------------------------------------------------------------------
-
-#--------------------------------------------------------------------------
-## Functions
-#--------------------------------------------------------------------------
-
-
+# Insert Text
+st.markdown("""
+            <div class="info-container">
+            📢 기능 설명(작업 중)
+            <li> 키워드와 관련된 뉴스를 검색하여 질문에 답할 수 있습니다. </li>
+            <li> 대화 내용을 기억하여 대답할 수 있습니다. </li>
+            <li> 검색 영역을 넓혀나갈 예정입니다. </li>
+            </div>
+            """, unsafe_allow_html=True)
 #--------------------------------------------------------------------------
 ## Settings
 #--------------------------------------------------------------------------
 if session_key not in st.session_state:
     st.session_state[session_key] = []
+
+if "search_chain" in st.session_state:
+     chat = st.session_state["search_chain"]
+     memory = st.session_state["search_chain"]
+else:
+     memory = ConversationBufferMemory(return_messages=True, memory_key="news_history")
+     runnable = RunnablePassthrough.assign(
+          news_history = RunnableLambda(memory.load_memory_variables)
+          | itemgetter("news_history")
+     )
 #--------------------------------------------------------------------------
 ## Header
 #--------------------------------------------------------------------------

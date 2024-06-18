@@ -30,9 +30,9 @@ st.markdown("""
 if session_key not in st.session_state:
     st.session_state[session_key] = []
 
-if "chain" in st.session_state:
-    chat = st.session_state["chain"]
-    memory = st.session_state["memory"]
+if "counseling_chain" in st.session_state:
+    chat = st.session_state["counseling_chain"]
+    memory = st.session_state["counseling_memory"]
 else:
     # Chat 인스턴스 생성
     # prompt = PromptTemplate.from_template(template)
@@ -46,8 +46,8 @@ else:
     chain = runnable | prompt | model | StrOutputParser()
 
     chat = Chat(chain, session_key)
-    st.session_state["chain"] = chat
-    st.session_state["memory"] = memory
+    st.session_state["counseling_chain"] = chat
+    st.session_state["counseling_memory"] = memory
 
 #--------------------------------------------------------------------------
 ## Header & Body
