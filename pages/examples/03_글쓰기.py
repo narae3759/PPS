@@ -136,17 +136,20 @@ with tab2:
         maxtags = 10)
     
     if tab2_button := st.button("Write", type="primary"):
-        chain = st.session_state["gen_chain2"] | StrOutputParser()
-        with st.container(border=True):
-            text_align("<b>추천 레시피</b>")
-            vertical_space(5)
-            container = st.empty()
-            handler = CustomHandler(container)
-            response = chain.invoke(
-                {"ingredients": keywords},
-                {"callbacks": [handler]}
-            )
-            # print(response)
+        if not keywords:
+            st.error("단어가 입력되지 않았습니다.",icon="🚨")
+        else:
+            chain = st.session_state["gen_chain2"] | StrOutputParser()
+            with st.container(border=True):
+                text_align("<b>추천 레시피</b>")
+                vertical_space(5)
+                container = st.empty()
+                handler = CustomHandler(container)
+                response = chain.invoke(
+                    {"ingredients": keywords},
+                    {"callbacks": [handler]}
+                )
+                # print(response)
 
 #--------------------------------------------------------------------------
 ## Body 3 - 아이디어 표로 작성
