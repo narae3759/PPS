@@ -24,6 +24,9 @@
 * 네이버 리뷰 크롤링 모듈 개발(`review_analyzer/crawler.py`)<br>
     : 네이버 리뷰 URL, 목표 수집량을 입력하면 리뷰 데이터를 수집한다. 
 
+    ![](https://imgur.com/2yboKO0.png)
+
+* 총 206개의 데이터 수집 
     ![](https://imgur.com/7uyxkam.png)
 
 
