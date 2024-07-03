@@ -30,28 +30,50 @@
     ![](https://imgur.com/7uyxkam.png)
 
 
-### 2. 데이터 탐색 (1) - 텍스트 외 정보
+### 2. 데이터 전처리
+
+* 데이터 탐색
+    - 정보가 너무 적어 사용하지 않음 `additional_info`, `auth_method`
+    - 아이디, 방문 날짜, n번째 방문이 잘 맞지 않아 사용하지 않음. `n_visit` 
 
 * 전처리 과정
-    - 중복 제거
-    - 정보가 너무 적어 필요없는 열 제거 `additional_info`
-    - 아이디, 방문 날짜, n번째 방문이 잘 맞지 않는 것을 확인. `n_visit` 열 삭제 후 다시 중복 제거
+    1. 중복 제거
+    2. `date`열을 `date`와 `weekday`로 분리(ex. 2024년 6월 7일 -> 2024-06-07, 금요일)
+    3. 필요없는 문자 제거(특수문자, 모음, 자음 등)
+    4. `review` 결측치 제거
+    5. `review` 교정
+        1) 맞춤법 검사했으나 신조어의 의미가 달라져 쓰지 않음(❌ Pyhanspell)
+        2) 두 개의 라이브러리를 비교하여 띄어쓰기 교정(Pykospacing, ✅ Soyspacing)
+    6. `review` 길이를 통해 이상치 제거
+        1) IQR를 기준으로 상한값 설정
+        2) 하한값은 의미가 다양해지는 구간을 탐색하여 사용자가 직접 설정함
 
-* 의미 있는 결과
-    - 리뷰가 22년부터 활발해진 것으로 나타났으며, 23년보다 22년에 가장 활발했다.
-    - 금, 토, 일에 가장 리뷰 수가 많은 것으로 나타났다. 
+* 리뷰 형태소 분석
+    * 불용어, 신조어, 가중치 등 여러 기능이 포함되어 있는 Kiwi 형태소 분석기 선택
+    * Kiwi에서 제공하는 stopwords 이용하여 불용어 제거
+    * 의미가 있다고 생각하는 체언(N), 용언(V)만 분석에 사용
 
-* 나의 생각
-    - 월, 화, 수, 목 / 금, 토, 일로 나눠서 비교해볼 수 있을 것 같다.
-    - 22년과 23년의 리뷰 반응을 비교해보는 것도 좋을 것 같다. 
+### 3. 데이터 탐색 
+
+* 시기별로 특정한 패턴이 보이지는 않으나, 연말과 연초에 많이 방문하는 것으로 보임.
+
+    ![](https://imgur.com/a1cIkFU.png)
+
+* 2022년까지 계속 리뷰 수가 증가하다가 2023년에 다소 줄어듦.
+
+    ![](https://imgur.com/FDKv0RT.png)
 
 
-
-### 3. 데이터 탐색 (2) - 리뷰
 
 ### 4. 데이터 분석
 
 ## 📋 결론
+
+## References 
+
+* [GitHub, Pykospacing](https://github.com/haven-jeon/PyKoSpacing)
+* [GiHub, Soyspacing](https://github.com/lovit/soyspacing?tab=readme-ov-file)
+* [ratsgo Blog, Soyspacing Model Download](https://ratsgo.github.io/embedding/downloaddata.html)
 
 
 
