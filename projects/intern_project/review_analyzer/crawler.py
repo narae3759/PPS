@@ -14,7 +14,7 @@ from selenium.webdriver.common.by import By
 
 # Logger 설정
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 # 터미널에 출력할 수 있게 함
 handler = logging.StreamHandler()
@@ -95,22 +95,16 @@ class ReviewCrawler:
             self.driver.find_elements(By.CLASS_NAME, "zMIkw")[-1].click()
 
         # 목표 수집 댓글 수를 결정하는 경우
-        while True:
-            more_btn = find_element_by_class(self.driver, "fvwqf")
+        rep = int(self.n_target // 10) - 1
 
-            # 더 보기 버튼 안보이면 break
-            if not more_btn: 
-                self.no_data = True
-                break
+        for _ in range(rep):
+            more_btn = find_element_by_class(self.driver, "fvwqf")
             
+            # 더 보기 버튼 안보이면 break
+            if not more_btn: break
+
             more_btn.click()
             time.sleep(0.5)
-
-            # 목표 리뷰 개수 도달하면 break
-            reviews = self.driver.find_elements(By.CLASS_NAME, "owAeM")
-            if len(reviews) > self.n_target:
-                # print("목표 리뷰 개수 도달")
-                break
         
         # 전체 리뷰 추출
         reviews = self.driver.find_elements(By.CLASS_NAME, "owAeM")
@@ -171,33 +165,33 @@ class ReviewCrawler:
             more_btn.click()
             time.sleep(0.5)
         
-        reviews = self.driver.find_elements(By.CLASS_NAME, "owAeM")[-n_click*10:]
-        self._crawling(reviews)
+        reviews = self.driver.find_elements(By.CLASS_NAME, "owAeM")
+        self._crawling(reviews[len(self.json_data):])
 
     def run(self) -> None:
         """전체 리뷰 크롤링을 실행하는 함수"""
-        logger.debug(f"==========START CRAWLING==========")
-        logger.debug(f"URL: {self.url}")
+        logger.info(f"==========START CRAWLING==========")
+        logger.info(f"URL: {self.url}")
 
         self.driver = self._open_chrome()
         reviews = self._sort_and_scroll()
 
-        logger.debug(f"{len(reviews)}개의 리뷰를 추출합니다. >>> 텍스트인 리뷰만 수집됩니다.")
+        logger.info(f"{len(reviews)}개의 리뷰를 추출합니다. >>> 텍스트인 리뷰만 수집됩니다.")
 
         self._crawling(reviews)
-        logger.debug(f"수집된 리뷰는 {len(self.json_data)}개 입니다.")
+        logger.info(f"수집된 리뷰는 {len(self.json_data)}개 입니다.")
         
         n_add = self.n_target - len(self.json_data)
         if self.no_data:
-            logger.debug(f"더 이상 수집할 데이터가 없습니다.")
+            logger.info(f"더 이상 수집할 데이터가 없습니다.")
         elif n_add > 0:
             n_click = int(n_add // 10) + 1
-            logger.debug(f"목표 수집량을 위해 추가 수집합니다.")
+            logger.info(f"목표 수집량을 위해 추가 수집합니다.")
             self._add_crawling(n_click)
         
         self.data = pd.json_normalize(self.json_data)
-        logger.debug(f"최종 수집된 리뷰는 {len(self.json_data)}개 입니다.")
-        logger.debug(f"========== END  CRAWLING==========")
+        logger.info(f"최종 수집된 리뷰는 {len(self.json_data)}개 입니다.")
+        logger.info(f"========== END  CRAWLING==========")
 
     def save_data(self, save_path: str) -> None:
         """리뷰 데이터를 save_path에 저장하는 메서드
@@ -205,16 +199,16 @@ class ReviewCrawler:
         Args:
             save_path (str): 저장할 파일 경로
         """
-        if isinstance(save_path, WindowsPath):
-            save_path = save_path.as_posix()
+        path = Path(save_path)
+        suffix = path.suffix
 
-        if save_path[-4:] == "json":
-            with open(save_path, "w", encoding="utf-8") as json_file:
+        if suffix == "json":
+            with open(path, "w", encoding="utf-8") as json_file:
                 json.dump(self.json_data, json_file, indent=4, ensure_ascii=False)
         else:
-            self.data.to_csv(save_path, index=False, encoding="utf-8")
+            self.data.to_csv(path, index=False, encoding="utf-8")
 
-        logger.debug(f"SUCCESS! PATH: {save_path}")
+        logger.info(f"SUCCESS! PATH: {save_path}")
 
 
 if __name__ == "__main__":

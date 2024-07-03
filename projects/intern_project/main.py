@@ -6,7 +6,7 @@ def main():
     url = "https://pcmap.place.naver.com/restaurant/13166754/review/visitor" # 리뷰 많은 곳
 
     # 리뷰 분석기 인스턴스 생성
-    crawler = ReviewCrawler(url, n_target=200)
+    crawler = ReviewCrawler(url, n_target=500)
 
     # 리뷰 분석기 실행
     crawler.run()
