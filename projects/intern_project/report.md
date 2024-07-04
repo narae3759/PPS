@@ -74,6 +74,7 @@
 * [GitHub, Pykospacing](https://github.com/haven-jeon/PyKoSpacing)
 * [GiHub, Soyspacing](https://github.com/lovit/soyspacing?tab=readme-ov-file)
 * [ratsgo Blog, Soyspacing Model Download](https://ratsgo.github.io/embedding/downloaddata.html)
+* [GitHub, Kiwipiepy](https://github.com/bab2min/kiwipiepy)
 
 
 
