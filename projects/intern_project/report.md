@@ -19,6 +19,8 @@
 
 ## 📋 프로젝트 과정
 
+✅ 이 프로젝트에서의 "리뷰"는 음식점에 대한 방문객의 의견을 나타내며, "굿", "좋아요" 등과 같이 형식적으로 쓴 글은 "리뷰"라고 정의하지 않겠다.
+
 ### 1. 데이터 수집
 
 * 네이버 리뷰 크롤링 모듈 개발(`review_analyzer/crawler.py`)<br>
@@ -27,31 +29,35 @@
     ![](https://imgur.com/2yboKO0.png)
 
 * 총 206개의 데이터 수집 
+
     ![](https://imgur.com/7uyxkam.png)
 
 
 ### 2. 데이터 전처리
 
-* 데이터 탐색
-    - 정보가 너무 적어 사용하지 않음 `additional_info`, `auth_method`
-    - 아이디, 방문 날짜, n번째 방문이 잘 맞지 않아 사용하지 않음. `n_visit` 
+#### 1)  데이터 탐색
 
-* 전처리 과정
-    1. 중복 제거
-    2. `date`열을 `date`와 `weekday`로 분리(ex. 2024년 6월 7일 -> 2024-06-07, 금요일)
-    3. 필요없는 문자 제거(특수문자, 모음, 자음 등)
-    4. `review` 결측치 제거
-    5. `review` 교정
-        1) 맞춤법 검사했으나 신조어의 의미가 달라져 쓰지 않음(❌ Pyhanspell)
-        2) 두 개의 라이브러리를 비교하여 띄어쓰기 교정(Pykospacing, ✅ Soyspacing)
-    6. `review` 길이를 통해 이상치 제거
-        1) IQR를 기준으로 상한값 설정
-        2) 하한값은 의미가 다양해지는 구간을 탐색하여 사용자가 직접 설정함
+- 정보가 너무 적어 사용하지 않음 `additional_info`, `auth_method`
+- 아이디, 방문 날짜, n번째 방문이 잘 맞지 않아 사용하지 않음. `n_visit` 
 
-* 리뷰 형태소 분석
-    * 불용어, 신조어, 가중치 등 여러 기능이 포함되어 있는 Kiwi 형태소 분석기 선택
-    * Kiwi에서 제공하는 stopwords 이용하여 불용어 제거
-    * 의미가 있다고 생각하는 체언(N), 용언(V)만 분석에 사용
+#### 2) 전처리 과정
+
+1. 중복 제거
+2. `date`열을 `date`와 `weekday`로 분리(ex. 2024년 6월 7일 -> 2024-06-07, 금요일)
+3. 필요없는 문자 제거(특수문자, 모음, 자음 등)
+4. `review` 결측치 제거
+5. `review` 교정
+    1) 맞춤법 검사했으나 신조어의 의미가 달라져 쓰지 않음(❌ Pyhanspell)
+    2) 두 개의 라이브러리를 비교하여 띄어쓰기 교정(Pykospacing, ✅ Soyspacing)
+6. `review` 길이를 통해 이상치 제거
+    1) IQR를 기준으로 상한값 설정
+    2) 하한값은 의미가 다양해지는 구간을 탐색하여 사용자가 직접 설정함
+
+#### 3) 리뷰 형태소 분석
+
+* 불용어, 신조어, 가중치 등 여러 기능이 포함되어 있는 Kiwi 형태소 분석기 선택
+* Kiwi에서 제공하는 stopwords 이용하여 불용어 제거
+* 의미가 있다고 생각하는 체언(N), 용언(V)만 분석에 사용
 
 ### 3. 데이터 탐색 
 
@@ -63,7 +69,24 @@
 
     ![](https://imgur.com/FDKv0RT.png)
 
+* 전체 워드 클라우드 확인 결과
+    * 용언에서는 음식에 대한 맛 평가, 서비스에 대한 친절도, 방문 이유와 주변 분위기에 대해 주로 나타난 것으로 보임.
+    * 체언에서는 후기가 대체로 좋았으나 "비싸다", "아쉽다"의 키워드가 나타남. <br>
+    이때 "아쉽다"의 리뷰들만 검색해보았을 때 "유명한 걸 뒤늦게 알아 아쉬웠다"와 같이 부정적인 리뷰만 있는 것은 아닌 걸로 판단됨.
 
+        ![](https://imgur.com/PPkcJD2.png)
+
+* 22년과 23년의 워드 클라우드 비교<br>
+    22년에 비해 23년에 리뷰 활동이 줄어들어 이를 확인하고자 차집합을 추출함.
+
+    * 리뷰 수는 22년이 가장 많았지만, 표현은 23년이 더 다양하게 나타났으며, 만족도 또한 23년도가 더 좋았던 것으로 보임.
+
+        ![](https://imgur.com/iro3pbx.png)
+
+✳ **분석의 한계**
+
+* 용언과 체언이 구분되어 있어 각각의 키워드에 대한 긍/부정 매칭이 어려움
+* 워드클라우드로는 추측만 할 수 있을 뿐 정확한 분석에 어려움이 있음
 
 ### 4. 데이터 분석
 
@@ -74,6 +97,7 @@
 * [GitHub, Pykospacing](https://github.com/haven-jeon/PyKoSpacing)
 * [GiHub, Soyspacing](https://github.com/lovit/soyspacing?tab=readme-ov-file)
 * [ratsgo Blog, Soyspacing Model Download](https://ratsgo.github.io/embedding/downloaddata.html)
+* [GitHub, Kiwi](https://github.com/bab2min/Kiwi)
 * [GitHub, Kiwipiepy](https://github.com/bab2min/kiwipiepy)
 
 

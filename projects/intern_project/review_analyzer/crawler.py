@@ -35,14 +35,14 @@ class ReviewCrawler:
         data (pd.DataFrame): DataFrame 형식의 리뷰 데이터. _crawling 메서드에 의해 생성됨
     
     Methods:
-        run(): 리뷰 크롤링 실행
-        save_data(save_path): 리뷰 데이터를 save_path에 저장
+        run(): 리뷰 크롤링을 실행하는 메서드
+        save_data(save_path): 리뷰 데이터를 save_path에 저장하는 메서드
 
     Private Methods:
-        _open_chrome(): Chrome 브라우저를 생성
-        _sort_and_scroll(): 리뷰 정렬 및 더보기 클릭
-        _crawling(reviews): 리뷰 데이터 추출 및 수집
-        _add_crawling(n_click): 리뷰 데이터 추가 수집
+        _open_chrome(): Chrome 브라우저를 생성하는 메서드
+        _sort_and_scroll(): 리뷰 정렬 및 더보기 클릭하는 메서드
+        _crawling(reviews): 리뷰 데이터 추출 및 수집하는 메서드
+        _add_crawling(n_click): 리뷰 데이터 추가 수집하는 메서드
     """
 
     def __init__(
